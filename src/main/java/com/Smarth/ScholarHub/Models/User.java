@@ -5,14 +5,15 @@ import jakarta.persistence.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "user_details")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "name")
     private String name;
@@ -32,11 +33,11 @@ public class User {
     }
 
     // Getters and Setters
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
