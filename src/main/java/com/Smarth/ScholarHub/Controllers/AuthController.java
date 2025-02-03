@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -59,13 +63,15 @@ public class AuthController {
         try {
             user = userService.findByEmail(loginRequest.getEmail());
         } catch (UsernameNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
 
         // Check if password matches
         if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             // You can return a response or start a session here (e.g., using HttpSession or JWT)
-            return ResponseEntity.ok(user.getId());
+            Map<String, UUID> map = new HashMap<>();
+            map.put("userId", user.getId());
+            return ResponseEntity.ok(map);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password.");
         }

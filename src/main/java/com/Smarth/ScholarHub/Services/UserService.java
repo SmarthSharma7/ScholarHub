@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -20,13 +22,15 @@ public class UserService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    public UUID userRegistration(RegisterRequest registerRequest) {
+    public Map<String, UUID> userRegistration(RegisterRequest registerRequest) {
         User user = new User();
         user.setName(registerRequest.getName());
         user.setEmail(registerRequest.getEmail());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         userRepository.save(user);
-        return user.getId();
+        Map<String, UUID> map = new HashMap<>();
+        map.put("userId", user.getId());
+        return map;
     }
 
     public boolean existsByEmail(String email) {
