@@ -27,7 +27,7 @@ public class Subject {
     @Column(name = "attended_classes")
     private int attendedClasses;
 
-    @Column(name = "attendance_percentage", precision = 2, scale = 2, insertable = false, updatable = false)
+    @Column(name = "attendance_percentage", precision = 2, insertable = false, updatable = false)
     // Generated column
     private double attendancePercentage;
 
