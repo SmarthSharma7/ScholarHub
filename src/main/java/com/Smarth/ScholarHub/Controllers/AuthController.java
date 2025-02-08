@@ -69,9 +69,7 @@ public class AuthController {
         // Check if password matches
         if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             // You can return a response or start a session here (e.g., using HttpSession or JWT)
-            Map<String, UUID> map = new HashMap<>();
-            map.put("userId", user.getId());
-            return ResponseEntity.ok(map);
+            return ResponseEntity.ok(user);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password.");
         }
