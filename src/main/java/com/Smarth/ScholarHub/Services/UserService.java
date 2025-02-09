@@ -36,4 +36,13 @@ public class UserService {
                 orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
 
+    public void userDeletion(String email) {
+        if (userRepository.existsByEmail(email)) {
+            User user = userRepository.findByEmail(email).orElse(new User());
+            userRepository.deleteById(user.getId());
+        } else {
+            throw new UsernameNotFoundException("Account with email: " + email + " not found");
+        }
+    }
+
 }

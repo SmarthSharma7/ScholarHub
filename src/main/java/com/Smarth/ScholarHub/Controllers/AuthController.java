@@ -12,14 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -73,6 +66,17 @@ public class AuthController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password.");
         }
+    }
+
+    @DeleteMapping("/delete/{email}")
+    public ResponseEntity<?> userDeletion(@PathVariable String email) {
+        try {
+            userService.userDeletion(email);
+        } catch (UsernameNotFoundException ex) {
+            return ResponseEntity.badRequest().body("Account not found");
+        }
+        return ResponseEntity.ok("{\"message\": \"Account deleted successfully\"}");
+
     }
 
 }
