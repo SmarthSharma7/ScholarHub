@@ -2,6 +2,7 @@
 package com.Smarth.ScholarHub.Controllers;
 
 import com.Smarth.ScholarHub.DTOs.LoginRequest;
+import com.Smarth.ScholarHub.DTOs.VerifyOtpRequest;
 import com.Smarth.ScholarHub.Models.User;
 import com.Smarth.ScholarHub.DTOs.RegisterRequest;
 import com.Smarth.ScholarHub.Services.UserService;
@@ -77,6 +78,36 @@ public class AuthController {
         }
         return ResponseEntity.ok("{\"message\": \"Account deleted successfully\"}");
 
+    }
+
+    @PostMapping("/send-otp/{email}")
+    public ResponseEntity<?> sendOtp(@PathVariable String email) {
+        try {
+            userService.sendOtp(email);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+        }
+        return ResponseEntity.ok("{\"message\": \"OTP sent successfully\"}");
+    }
+
+    @PostMapping("/verify-otp/{email}")
+    public ResponseEntity<?> verifyOtp(@RequestBody VerifyOtpRequest verifyOtpRequest, @PathVariable String email) {
+        try {
+            userService.verifyOtp(email, verifyOtpRequest.getOtp());
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() +"\"}");
+        }
+        return ResponseEntity.ok("{\"message\": \"OTP verified successfully\"}");
+    }
+
+    @PutMapping("/reset-pass/{email}")
+    public ResponseEntity<?> resetPassword(@PathVariable String email, @RequestBody VerifyOtpRequest verifyOtpRequest) {
+        try {
+            userService.resetPassword(email, verifyOtpRequest.getOtp());
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+        }
+        return ResponseEntity.ok("{\"message\": \"Password changed successfully\"}");
     }
 
 }
