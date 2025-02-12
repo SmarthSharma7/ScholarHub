@@ -1,6 +1,7 @@
 
 package com.Smarth.ScholarHub.Services;
 
+import com.Smarth.ScholarHub.DTOs.UpdateProfileRequest;
 import com.Smarth.ScholarHub.Models.OtpVerification;
 import com.Smarth.ScholarHub.Models.User;
 import com.Smarth.ScholarHub.DTOs.RegisterRequest;
@@ -39,7 +40,7 @@ public class UserService {
         User user = new User();
         user.setName(registerRequest.getName().trim());
         user.setEmail(registerRequest.getEmail().trim());
-        user.setPassword(passwordEncoder.encode(registerRequest.getPassword().trim()));
+        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         userRepository.save(user);
         return user;
     }
@@ -75,7 +76,7 @@ public class UserService {
         if (existingOtp.isPresent()) {
             // Update existing OTP entry
             otpEntry = existingOtp.get();
-            otpEntry.setOtp(otp);
+            otpEntry.setOtp(passwordEncoder.encode(otp));
             otpEntry.setSentTime(now);
             otpEntry.setExpirationTime(expirationTime);
         } else {
@@ -107,7 +108,7 @@ public class UserService {
         OtpVerification otpEntry = otpRepository.findByEmail(email).orElse(new OtpVerification());
 
         // Check if OTP is correct
-        if (!otpEntry.getOtp().equals(otp)) {
+        if (!passwordEncoder.matches(otp, otpEntry.getOtp())) {
             throw new RuntimeException("Invalid OTP");
         }
 
@@ -125,7 +126,17 @@ public class UserService {
             throw new RuntimeException("Password must be at least 6 characters long");
         }
         User user = userRepository.findByEmail(email).orElse(new User());
-        user.setPassword(passwordEncoder.encode(newPass.trim()));
+        user.setPassword(passwordEncoder.encode(newPass));
+        userRepository.save(user);
+    }
+
+    public void updateProfile(String pass, UpdateProfileRequest updateProfileRequest) {
+        User user = userRepository.findById(updateProfileRequest.getId()).orElse(new User());
+        if (pass.equals("true") && !passwordEncoder.matches(updateProfileRequest.getOldPassword(), user.getPassword())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+        user.setName(updateProfileRequest.getName());
+        if (pass.equals("true")) user.setPassword(passwordEncoder.encode(updateProfileRequest.getNewPassword()));
         userRepository.save(user);
     }
 

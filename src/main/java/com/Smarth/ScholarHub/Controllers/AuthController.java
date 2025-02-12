@@ -2,6 +2,7 @@
 package com.Smarth.ScholarHub.Controllers;
 
 import com.Smarth.ScholarHub.DTOs.LoginRequest;
+import com.Smarth.ScholarHub.DTOs.UpdateProfileRequest;
 import com.Smarth.ScholarHub.DTOs.VerifyOtpRequest;
 import com.Smarth.ScholarHub.Models.User;
 import com.Smarth.ScholarHub.DTOs.RegisterRequest;
@@ -95,7 +96,7 @@ public class AuthController {
         try {
             userService.verifyOtp(email, verifyOtpRequest.getOtp());
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() +"\"}");
+            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
         }
         return ResponseEntity.ok("{\"message\": \"OTP verified successfully\"}");
     }
@@ -108,6 +109,16 @@ public class AuthController {
             return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
         }
         return ResponseEntity.ok("{\"message\": \"Password changed successfully\"}");
+    }
+
+    @PutMapping("/update-profile/{pass}")
+    public ResponseEntity<?> updateProfile(@PathVariable String pass, @RequestBody UpdateProfileRequest updateProfileRequest) {
+        try {
+            userService.updateProfile(pass, updateProfileRequest);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+        }
+        return ResponseEntity.ok("{\"message\": \"Profile updated successfully\"}");
     }
 
 }
