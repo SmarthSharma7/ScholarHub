@@ -67,7 +67,7 @@ public class UserService {
         // Generate a new 6-digit OTP
         String otp = String.valueOf(new Random().nextInt(900000) + 100000);
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expirationTime = now.plusMinutes(2); // OTP valid for 2 minutes
+        LocalDateTime expirationTime = now.plusMinutes(5); // OTP valid for 5 minutes
 
         // Check if an OTP entry already exists for the email
         Optional<OtpVerification> existingOtp = otpRepository.findByEmail(email);
@@ -82,6 +82,7 @@ public class UserService {
         } else {
             // Create new OTP entry
             otpEntry = new OtpVerification(email, otp, now, expirationTime);
+            otpEntry.setOtp(passwordEncoder.encode(otpEntry.getOtp()));
         }
         otpRepository.save(otpEntry); // UPDATE existing OTP
 
@@ -96,7 +97,7 @@ public class UserService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setTo(to);
             helper.setSubject("Your OTP for Password Reset");
-            helper.setText("Your OTP is: <b>" + otp + "</b>. It is valid for 2 minutes.", true);
+            helper.setText("Your OTP is: <b>" + otp + "</b>. It is valid for 5 minutes.", true);
             mailSender.send(message);
         } catch (MessagingException e) {
             throw new RuntimeException("Failed to send email");
@@ -135,7 +136,7 @@ public class UserService {
         if (pass.equals("true") && !passwordEncoder.matches(updateProfileRequest.getOldPassword(), user.getPassword())) {
             throw new RuntimeException("Current password is incorrect");
         }
-        user.setName(updateProfileRequest.getName());
+        user.setName(updateProfileRequest.getName().trim());
         if (pass.equals("true")) user.setPassword(passwordEncoder.encode(updateProfileRequest.getNewPassword()));
         userRepository.save(user);
     }
