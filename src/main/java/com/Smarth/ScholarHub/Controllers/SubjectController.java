@@ -1,12 +1,12 @@
 
 package com.Smarth.ScholarHub.Controllers;
 
+import com.Smarth.ScholarHub.DTOs.SubjectResponse;
 import com.Smarth.ScholarHub.Models.Subject;
 import com.Smarth.ScholarHub.Services.SubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,18 +22,24 @@ public class SubjectController {
     @PostMapping("/add/{userId}")
     public ResponseEntity<?> addSubject(@PathVariable UUID userId,
                                         @RequestBody Subject subject) {
-        Subject tempSubject;
+        SubjectResponse subjectResponse;
         try {
-            tempSubject = subjectService.addSubject(userId, subject);
-        } catch (UsernameNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User doesn't exist");
+            subjectResponse = subjectService.addSubject(userId, subject);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
         }
-        return ResponseEntity.ok(tempSubject);
+        return ResponseEntity.ok(subjectResponse);
     }
 
     @GetMapping("/get/{userId}")
-    public ResponseEntity<List<Subject>> getSubjects(@PathVariable UUID userId) {
-        return ResponseEntity.ok(subjectService.getSubjectsByUserId(userId));
+    public ResponseEntity<?> getSubjects(@PathVariable UUID userId) {
+        List<SubjectResponse> listOfSubjects;
+        try {
+            listOfSubjects = subjectService.getSubjectsByUserId(userId);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+        }
+        return ResponseEntity.ok(listOfSubjects);
     }
 
     @PutMapping("/update/{subjectId}/{isPresent}")

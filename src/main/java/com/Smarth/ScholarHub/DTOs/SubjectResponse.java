@@ -1,33 +1,15 @@
 
-package com.Smarth.ScholarHub.Models;
+package com.Smarth.ScholarHub.DTOs;
 
 import java.util.UUID;
 
-import jakarta.persistence.*;
+public class SubjectResponse {
 
-@Entity
-@Table(name = "subjects")
-public class Subject {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", nullable = false)
     private UUID id;
-
-    @ManyToOne // Many subjects can belong to one user
-    @JoinColumn(name = "user_id") // Foreign key column
-    private User user;
-
-    @Column(name = "name")
     private String name;
-
-    @Column(name = "total_classes")
     private int totalClasses;
-
-    @Column(name = "attended_classes")
     private int attendedClasses;
-
-    // Getters and setters for all fields
+    private double attendedPercentage;
 
     public UUID getId() {
         return id;
@@ -35,14 +17,6 @@ public class Subject {
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public String getName() {
@@ -67,6 +41,14 @@ public class Subject {
 
     public void setAttendedClasses(int attendedClasses) {
         this.attendedClasses = attendedClasses;
+    }
+
+    public double getAttendedPercentage() {
+        return attendedPercentage;
+    }
+
+    public void setAttendedPercentage(double attendedPercentage) {
+        this.attendedPercentage = attendedPercentage;
     }
 
 }
