@@ -31,24 +31,29 @@ public class SubjectService {
     public SubjectResponse addSubject(UUID userId, Subject subject) {
         User user = userRepository.findById(userId).orElse(new User());
         subject.setUser(user);
+        subject.setName(subject.getName().trim());
         subjectRepository.save(subject);
         SubjectResponse subjectResponse = new SubjectResponse();
         subjectResponse.setId(subject.getId());
         subjectResponse.setName(subject.getName());
         subjectResponse.setTotalClasses(subject.getTotalClasses());
         subjectResponse.setAttendedClasses(subject.getAttendedClasses());
-        subjectResponse.setAttendedPercentage(((double) subject.getAttendedClasses() / subject.getTotalClasses()) * 100);
+        if (subjectResponse.getTotalClasses() != 0) {
+            subjectResponse.setAttendedPercentage(((double) subject.getAttendedClasses() / subject.getTotalClasses()) * 100);
+        } else {
+            subjectResponse.setAttendedPercentage(100);
+        }
         return subjectResponse;
     }
 
     public List<SubjectResponse> getSubjectsByUserId(UUID userId) {
         List<Subject> list = subjectRepository.findByUserId(userId);
         if (list.isEmpty()) {
-          List<SubjectResponse> list1 = new ArrayList<>();
-          SubjectResponse subjectResponse = new SubjectResponse();
-          subjectResponse.setName("THe LIst IS EMpty");
-          list1.add(subjectResponse);
-          return list1;
+            List<SubjectResponse> list1 = new ArrayList<>();
+            SubjectResponse subjectResponse = new SubjectResponse();
+            subjectResponse.setName("THe LIst IS EMpty");
+            list1.add(subjectResponse);
+            return list1;
         }
         SubjectResponse subjectResponse = new SubjectResponse();
         List<SubjectResponse> listOfSubjects = new ArrayList<>();
@@ -64,16 +69,26 @@ public class SubjectService {
     }
 
     @Transactional
-    public Subject updateAttendance(UUID subjectId, boolean isPresent) {
-        Subject subject = subjectRepository.findById(subjectId).
-                                            orElseThrow(() -> new RuntimeException("Subject not found"));
-        subject.setTotalClasses(subject.getTotalClasses() + 1); // Always increment total classes
-        if (isPresent) {
-            subject.setAttendedClasses(subject.getAttendedClasses() + 1); // Increment attended if present
-        }
+    public SubjectResponse updateSubject(Subject subject) {
+        subject.setName(subject.getName().trim());
         subjectRepository.save(subject);
-        entityManager.refresh(subject); // Refresh to get updated attendance_percentage from DB
-        return subject;
+        SubjectResponse subjectResponse = new SubjectResponse();
+        subjectResponse.setId(subject.getId());
+        subjectResponse.setName(subject.getName());
+        subjectResponse.setTotalClasses(subject.getTotalClasses());
+        subjectResponse.setAttendedClasses(subject.getAttendedClasses());
+        if (subjectResponse.getTotalClasses() != 0) {
+            subjectResponse.setAttendedPercentage(((double) subject.getAttendedClasses() / subject.getTotalClasses()) * 100);
+        } else {
+            subjectResponse.setAttendedPercentage(100);
+        }
+        return subjectResponse;
+    }
+
+    public void deleteSubject(UUID subjectId) {
+        Subject subject = subjectRepository.findById(subjectId).
+                orElseThrow(() -> new RuntimeException("Subject not found"));
+        subjectRepository.delete(subject);
     }
 
 }

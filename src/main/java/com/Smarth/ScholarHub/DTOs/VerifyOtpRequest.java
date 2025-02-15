@@ -1,9 +1,6 @@
 
 package com.Smarth.ScholarHub.DTOs;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-
 public class VerifyOtpRequest {
 
     public String getOtp() {

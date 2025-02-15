@@ -5,7 +5,6 @@ import com.Smarth.ScholarHub.DTOs.SubjectResponse;
 import com.Smarth.ScholarHub.Models.Subject;
 import com.Smarth.ScholarHub.Services.SubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,16 +41,25 @@ public class SubjectController {
         return ResponseEntity.ok(listOfSubjects);
     }
 
-    @PutMapping("/update/{subjectId}/{isPresent}")
-    public ResponseEntity<?> updateAttendance(@PathVariable(value = "subjectId") UUID subjectId,
-                                              @PathVariable(value = "isPresent") boolean isPresent) {
-        Subject subject;
+    @PutMapping("/update")
+    public ResponseEntity<?> updateAttendance(@RequestBody Subject subject) {
+        SubjectResponse subjectResponse;
         try {
-            subject = subjectService.updateAttendance(subjectId, isPresent);
+            subjectResponse = subjectService.updateSubject(subject);
         } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Subject not found");
+            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
         }
-        return ResponseEntity.ok(subject);
+        return ResponseEntity.ok(subjectResponse);
+    }
+
+    @DeleteMapping("/delete/{subjectId}")
+    public ResponseEntity<?> deleteSubject(@PathVariable UUID subjectId) {
+        try {
+            subjectService.deleteSubject(subjectId);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+        }
+        return ResponseEntity.ok("{\"message\": \"Subject deleted successfully\"}");
     }
 
 }
