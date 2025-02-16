@@ -43,6 +43,7 @@ public class SubjectService {
         } else {
             subjectResponse.setAttendedPercentage(100);
         }
+        subjectResponse.setCreatedAt(subject.getCreatedAt());
         return subjectResponse;
     }
 
@@ -63,6 +64,7 @@ public class SubjectService {
             subjectResponse.setTotalClasses(subject.getTotalClasses());
             subjectResponse.setAttendedClasses(subject.getAttendedClasses());
             subjectResponse.setAttendedPercentage(((double) subject.getAttendedClasses() / subject.getTotalClasses()) * 100);
+            subjectResponse.setCreatedAt(subject.getCreatedAt());
             listOfSubjects.add(subjectResponse);
         }
         return listOfSubjects;

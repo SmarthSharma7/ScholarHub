@@ -1,6 +1,8 @@
 
 package com.Smarth.ScholarHub.Models;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.UUID;
 
 import jakarta.persistence.*;
@@ -26,6 +28,14 @@ public class Subject {
 
     @Column(name = "attended_classes")
     private int attendedClasses;
+
+    @Column(name = "created_at")
+    private java.sql.Timestamp createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = Timestamp.from(Instant.now());
+    }
 
     // Getters and setters for all fields
 
@@ -69,4 +79,11 @@ public class Subject {
         this.attendedClasses = attendedClasses;
     }
 
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
 }

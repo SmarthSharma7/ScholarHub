@@ -1,6 +1,7 @@
 
 package com.Smarth.ScholarHub.DTOs;
 
+import java.util.Date;
 import java.util.UUID;
 
 public class SubjectResponse {
@@ -10,6 +11,7 @@ public class SubjectResponse {
     private int totalClasses;
     private int attendedClasses;
     private double attendedPercentage;
+    private Date createdAt;
 
     public UUID getId() {
         return id;
@@ -51,4 +53,11 @@ public class SubjectResponse {
         this.attendedPercentage = attendedPercentage;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
 }
