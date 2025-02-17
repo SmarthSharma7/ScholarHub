@@ -29,7 +29,7 @@ public class SubjectService {
     private EntityManager entityManager; // To refresh entity after DB update
 
     public SubjectResponse addSubject(UUID userId, Subject subject) {
-        User user = userRepository.findById(userId).orElse(new User());
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Couldn't find user"));
         subject.setUser(user);
         subject.setName(subject.getName().trim());
         subjectRepository.save(subject);
@@ -52,19 +52,22 @@ public class SubjectService {
         if (list.isEmpty()) {
             List<SubjectResponse> list1 = new ArrayList<>();
             SubjectResponse subjectResponse = new SubjectResponse();
-            subjectResponse.setName("THe LIst IS EMpty");
+            subjectResponse.setName("The List Is Empty");
             list1.add(subjectResponse);
             return list1;
         }
-        SubjectResponse subjectResponse = new SubjectResponse();
         List<SubjectResponse> listOfSubjects = new ArrayList<>();
         for (Subject subject : list) {
+            // Create a new SubjectResponse object for each subject
+            SubjectResponse subjectResponse = new SubjectResponse();
             subjectResponse.setId(subject.getId());
             subjectResponse.setName(subject.getName());
             subjectResponse.setTotalClasses(subject.getTotalClasses());
             subjectResponse.setAttendedClasses(subject.getAttendedClasses());
             subjectResponse.setAttendedPercentage(((double) subject.getAttendedClasses() / subject.getTotalClasses()) * 100);
             subjectResponse.setCreatedAt(subject.getCreatedAt());
+
+            // Add the new SubjectResponse to the list
             listOfSubjects.add(subjectResponse);
         }
         return listOfSubjects;
@@ -72,18 +75,24 @@ public class SubjectService {
 
     @Transactional
     public SubjectResponse updateSubject(Subject subject) {
-        subject.setName(subject.getName().trim());
-        subjectRepository.save(subject);
+        // Fetch the subject again from the database to make sure it is attached
+        Subject existingSubject = subjectRepository.findById(subject.getId())
+                .orElseThrow(() -> new RuntimeException("Subject not found"));
+
+        // Update fields
+        existingSubject.setName(subject.getName().trim());
+        existingSubject.setTotalClasses(subject.getTotalClasses());
+        existingSubject.setAttendedClasses(subject.getAttendedClasses());
+        subjectRepository.save(existingSubject); // Save the updated entity
+
+        // Prepare the response
         SubjectResponse subjectResponse = new SubjectResponse();
-        subjectResponse.setId(subject.getId());
-        subjectResponse.setName(subject.getName());
-        subjectResponse.setTotalClasses(subject.getTotalClasses());
-        subjectResponse.setAttendedClasses(subject.getAttendedClasses());
-        if (subjectResponse.getTotalClasses() != 0) {
-            subjectResponse.setAttendedPercentage(((double) subject.getAttendedClasses() / subject.getTotalClasses()) * 100);
-        } else {
-            subjectResponse.setAttendedPercentage(100);
-        }
+        subjectResponse.setId(existingSubject.getId());
+        subjectResponse.setName(existingSubject.getName());
+        subjectResponse.setTotalClasses(existingSubject.getTotalClasses());
+        subjectResponse.setAttendedClasses(existingSubject.getAttendedClasses());
+        subjectResponse.setAttendedPercentage(((double) existingSubject.getAttendedClasses() / existingSubject.getTotalClasses()) * 100);
+        subjectResponse.setCreatedAt(existingSubject.getCreatedAt());
         return subjectResponse;
     }
 

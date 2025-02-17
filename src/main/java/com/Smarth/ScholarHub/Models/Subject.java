@@ -17,7 +17,7 @@ public class Subject {
     private UUID id;
 
     @ManyToOne // Many subjects can belong to one user
-    @JoinColumn(name = "user_id") // Foreign key column
+    @JoinColumn(name = "user_id", nullable = false) // Foreign key column
     private User user;
 
     @Column(name = "name")
