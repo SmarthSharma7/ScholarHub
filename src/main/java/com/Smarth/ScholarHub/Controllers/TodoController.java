@@ -1,7 +1,6 @@
 
 package com.Smarth.ScholarHub.Controllers;
 
-import com.Smarth.ScholarHub.DTOs.BoardResponse;
 import com.Smarth.ScholarHub.Models.Board;
 import com.Smarth.ScholarHub.Services.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;

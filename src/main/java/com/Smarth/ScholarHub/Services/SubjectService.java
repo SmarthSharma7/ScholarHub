@@ -10,7 +10,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,14 +65,12 @@ public class SubjectService {
             subjectResponse.setAttendedClasses(subject.getAttendedClasses());
             subjectResponse.setAttendedPercentage(((double) subject.getAttendedClasses() / subject.getTotalClasses()) * 100);
             subjectResponse.setCreatedAt(subject.getCreatedAt());
-
             // Add the new SubjectResponse to the list
             listOfSubjects.add(subjectResponse);
         }
         return listOfSubjects;
     }
 
-    @Transactional
     public SubjectResponse updateSubject(Subject subject) {
         // Fetch the subject again from the database to make sure it is attached
         Subject existingSubject = subjectRepository.findById(subject.getId())
@@ -83,6 +80,7 @@ public class SubjectService {
         existingSubject.setName(subject.getName().trim());
         existingSubject.setTotalClasses(subject.getTotalClasses());
         existingSubject.setAttendedClasses(subject.getAttendedClasses());
+//        existingSubject.setCreatedAt(subject.getCreatedAt());
         subjectRepository.save(existingSubject); // Save the updated entity
 
         // Prepare the response

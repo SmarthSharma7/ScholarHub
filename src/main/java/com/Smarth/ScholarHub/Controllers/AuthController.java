@@ -66,7 +66,7 @@ public class AuthController {
             // You can return a response or start a session here (e.g., using HttpSession or JWT)
             return ResponseEntity.ok(user);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"message\": \"Invalid password\"}");
         }
     }
 

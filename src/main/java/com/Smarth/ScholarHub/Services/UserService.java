@@ -56,7 +56,7 @@ public class UserService {
 
     public void userDeletion(String email) {
         if (userRepository.existsByEmail(email)) {
-            User user = userRepository.findByEmail(email).orElse(new User());
+            User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
             userRepository.deleteById(user.getId());
         } else {
             throw new UsernameNotFoundException("Account with email: " + email + " not found");
@@ -106,7 +106,7 @@ public class UserService {
 
     public void verifyOtp(String email, String otp) {
         // Fetch the OTP entry from the database
-        OtpVerification otpEntry = otpRepository.findByEmail(email).orElse(new OtpVerification());
+        OtpVerification otpEntry = otpRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("An error occurred"));
 
         // Check if OTP is correct
         if (!passwordEncoder.matches(otp, otpEntry.getOtp())) {
@@ -126,13 +126,13 @@ public class UserService {
         if (newPass.length() < 6) {
             throw new RuntimeException("Password must be at least 6 characters long");
         }
-        User user = userRepository.findByEmail(email).orElse(new User());
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
         user.setPassword(passwordEncoder.encode(newPass));
         userRepository.save(user);
     }
 
     public void updateProfile(String pass, UpdateProfileRequest updateProfileRequest) {
-        User user = userRepository.findById(updateProfileRequest.getId()).orElse(new User());
+        User user = userRepository.findById(updateProfileRequest.getId()).orElseThrow(() -> new RuntimeException("User not found"));
         if (pass.equals("true") && !passwordEncoder.matches(updateProfileRequest.getOldPassword(), user.getPassword())) {
             throw new RuntimeException("Current password is incorrect");
         }
