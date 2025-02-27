@@ -1,10 +1,9 @@
-
 package com.Smarth.ScholarHub.Services;
 
+import com.Smarth.ScholarHub.DTOs.RegisterRequest;
 import com.Smarth.ScholarHub.DTOs.UpdateProfileRequest;
 import com.Smarth.ScholarHub.Models.OtpVerification;
 import com.Smarth.ScholarHub.Models.User;
-import com.Smarth.ScholarHub.DTOs.RegisterRequest;
 import com.Smarth.ScholarHub.Repositories.OtpVerificationRepository;
 import com.Smarth.ScholarHub.Repositories.UserRepository;
 import jakarta.mail.MessagingException;

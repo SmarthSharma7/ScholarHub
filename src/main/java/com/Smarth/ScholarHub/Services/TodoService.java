@@ -1,7 +1,7 @@
-
 package com.Smarth.ScholarHub.Services;
 
 import com.Smarth.ScholarHub.DTOs.TodoTaskRequest;
+import com.Smarth.ScholarHub.DTOs.TodoTaskResponse;
 import com.Smarth.ScholarHub.Models.Board;
 import com.Smarth.ScholarHub.Models.TodoTask;
 import com.Smarth.ScholarHub.Models.User;
@@ -11,6 +11,8 @@ import com.Smarth.ScholarHub.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -54,6 +56,30 @@ public class TodoService {
         todoTask.setDueDate(todoTaskRequest.getDueDate());
         todoTaskRepository.save(todoTask);
         return todoTask;
+    }
+
+    public List<TodoTaskResponse> getAllTasksForUser(UUID userId) {
+        List<TodoTask> list = todoTaskRepository.findByUserId(userId);
+        List<TodoTaskResponse> responseList = new ArrayList<>();
+        for (TodoTask todoTask : list) {
+            TodoTaskResponse todoTaskResponse = new TodoTaskResponse();
+            todoTaskResponse.setId(todoTask.getId());
+            todoTaskResponse.setTitle(todoTask.getTitle());
+            todoTaskResponse.setBoardId(todoTask.getBoard().getId());
+            todoTaskResponse.setCreatedAt(todoTask.getCreatedAt());
+            todoTaskResponse.setDueDate(todoTask.getDueDate());
+            todoTaskResponse.setPriority(todoTask.getPriority());
+            responseList.add(todoTaskResponse);
+        }
+        return responseList;
+    }
+
+    public void deleteTask(UUID taskId) {
+        todoTaskRepository.deleteById(taskId);
+    }
+
+    public List<Board> getAllBoardsForUser(UUID userId) {
+        return boardRepository.findByUserId(userId);
     }
 
 }

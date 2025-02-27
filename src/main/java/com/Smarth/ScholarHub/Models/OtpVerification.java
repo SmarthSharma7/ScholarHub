@@ -1,4 +1,3 @@
-
 package com.Smarth.ScholarHub.Models;
 
 import jakarta.persistence.*;

@@ -1,11 +1,10 @@
-
 package com.Smarth.ScholarHub.Models;
+
+import jakarta.persistence.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
-
-import jakarta.persistence.*;
 
 @Entity
 @Table(name = "subjects")

@@ -1,7 +1,7 @@
-
 package com.Smarth.ScholarHub.Controllers;
 
 import com.Smarth.ScholarHub.DTOs.TodoTaskRequest;
+import com.Smarth.ScholarHub.DTOs.TodoTaskResponse;
 import com.Smarth.ScholarHub.Models.Board;
 import com.Smarth.ScholarHub.Models.TodoTask;
 import com.Smarth.ScholarHub.Services.TodoService;
@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -64,6 +65,26 @@ public class TodoController {
                     .body("{\"message\": \"" + ex.getMessage() + "\"}");
         }
         return ResponseEntity.ok(todoTask);
+    }
+
+    @GetMapping("/task/getAll/{userId}")
+    public List<TodoTaskResponse> getAllTasksForUser(@PathVariable("userId") UUID userId) {
+        return todoService.getAllTasksForUser(userId);
+    }
+
+    @DeleteMapping("/task/delete/{taskId}")
+    public ResponseEntity<?> deleteTask(@PathVariable("taskId") UUID taskId) {
+        try {
+            todoService.deleteTask(taskId);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+        }
+        return ResponseEntity.ok("{\"message\": \"Task deleted successfully\"}");
+    }
+
+    @GetMapping("/boards/getAll/{userId}")
+    public List<Board> getAllBoardsForUser(@PathVariable("userId") UUID userId) {
+        return todoService.getAllBoardsForUser(userId);
     }
 
 }

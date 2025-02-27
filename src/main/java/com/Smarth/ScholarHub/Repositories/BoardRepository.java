@@ -1,4 +1,3 @@
-
 package com.Smarth.ScholarHub.Repositories;
 
 import com.Smarth.ScholarHub.Models.Board;

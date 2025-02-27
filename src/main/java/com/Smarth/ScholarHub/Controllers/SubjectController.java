@@ -1,4 +1,3 @@
-
 package com.Smarth.ScholarHub.Controllers;
 
 import com.Smarth.ScholarHub.DTOs.SubjectResponse;

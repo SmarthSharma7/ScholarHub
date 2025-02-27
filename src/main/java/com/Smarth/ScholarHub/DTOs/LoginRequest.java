@@ -1,4 +1,3 @@
-
 package com.Smarth.ScholarHub.DTOs;
 
 import jakarta.validation.constraints.Email;

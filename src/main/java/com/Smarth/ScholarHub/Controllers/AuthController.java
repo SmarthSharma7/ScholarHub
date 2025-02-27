@@ -1,11 +1,10 @@
-
 package com.Smarth.ScholarHub.Controllers;
 
 import com.Smarth.ScholarHub.DTOs.LoginRequest;
+import com.Smarth.ScholarHub.DTOs.RegisterRequest;
 import com.Smarth.ScholarHub.DTOs.UpdateProfileRequest;
 import com.Smarth.ScholarHub.DTOs.VerifyOtpRequest;
 import com.Smarth.ScholarHub.Models.User;
-import com.Smarth.ScholarHub.DTOs.RegisterRequest;
 import com.Smarth.ScholarHub.Services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,3 @@
-
 package com.Smarth.ScholarHub.Controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;

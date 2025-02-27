@@ -1,4 +1,3 @@
-
 package com.Smarth.ScholarHub;
 
 import org.springframework.boot.SpringApplication;
