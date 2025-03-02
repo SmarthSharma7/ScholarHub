@@ -1,9 +1,11 @@
 package com.Smarth.ScholarHub.Models;
 
+import com.Smarth.ScholarHub.StringListConverter;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -30,6 +32,16 @@ public class User {
     public void prePersist() {
         this.createdAt = Timestamp.from(Instant.now());
     }
+
+    @Column(name = "bio", nullable = true)
+    private String bio;
+
+    @Convert(converter = StringListConverter.class)
+    @Column(name = "skills", columnDefinition = "TEXT", nullable = true)
+    private List<String> skills;
+
+    @Column(name = "is_available", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isAvailable;
 
     // Getters and Setters
     public UUID getId() {
@@ -72,4 +84,27 @@ public class User {
         this.createdAt = createdAt;
     }
 
+    public List<String> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(List<String> skills) {
+        this.skills = skills;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public Boolean getIsAvailable() {
+        return isAvailable;
+    }
+
+    public void setIsAvailable(Boolean available) {
+        isAvailable = available;
+    }
 }
