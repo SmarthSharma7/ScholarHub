@@ -1,5 +1,6 @@
 package com.Smarth.ScholarHub.Services;
 
+import com.Smarth.ScholarHub.DTOs.SearchResponse;
 import com.Smarth.ScholarHub.DTOs.TeamUpProfileRequest;
 import com.Smarth.ScholarHub.DTOs.TeamUpProfileResponse;
 import com.Smarth.ScholarHub.Models.User;
@@ -7,6 +8,8 @@ import com.Smarth.ScholarHub.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -61,6 +64,21 @@ public class TeamUpService {
         user.setSkills(null);
         user.setIsAvailable(false);
         userRepository.save(user);
+    }
+
+    public List<SearchResponse> searchUsers(String query) {
+        List<User> users = userRepository.searchUsers(query);
+        List<SearchResponse> matchedUsers = new ArrayList<>();
+        users.forEach(user -> {
+            SearchResponse matchedUser = new SearchResponse();
+            matchedUser.setName(user.getName());
+            matchedUser.setEmail(user.getEmail());
+            matchedUser.setBio(user.getBio());
+            matchedUser.setSkills(user.getSkills());
+            matchedUser.setIsAvailable(user.getIsAvailable());
+            matchedUsers.add(matchedUser);
+        });
+        return matchedUsers;
     }
 
 }

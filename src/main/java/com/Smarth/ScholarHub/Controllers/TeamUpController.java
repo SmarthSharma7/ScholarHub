@@ -1,6 +1,7 @@
 
 package com.Smarth.ScholarHub.Controllers;
 
+import com.Smarth.ScholarHub.DTOs.SearchResponse;
 import com.Smarth.ScholarHub.DTOs.TeamUpProfileRequest;
 import com.Smarth.ScholarHub.DTOs.TeamUpProfileResponse;
 import com.Smarth.ScholarHub.Services.TeamUpService;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -57,6 +59,12 @@ public class TeamUpController {
             return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
         }
         return ResponseEntity.ok("{\"message\": \"Profile deleted successfully\"}");
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<SearchResponse>> searchUsers(@RequestParam String query) {
+        List<SearchResponse> users = teamUpService.searchUsers(query);
+        return ResponseEntity.ok(users);
     }
 
 }

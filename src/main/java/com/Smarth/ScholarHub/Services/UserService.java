@@ -7,6 +7,7 @@ import com.Smarth.ScholarHub.Models.User;
 import com.Smarth.ScholarHub.Repositories.OtpVerificationRepository;
 import com.Smarth.ScholarHub.Repositories.UserRepository;
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
@@ -65,6 +67,7 @@ public class UserService {
     public void sendOtp(String email) {
         // Generate a new 6-digit OTP
         String otp = String.valueOf(new Random().nextInt(900000) + 100000);
+        System.out.println(otp);
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expirationTime = now.plusMinutes(5); // OTP valid for 5 minutes
 
@@ -94,12 +97,17 @@ public class UserService {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
             helper.setTo(to);
             helper.setSubject("Your OTP for Password Reset");
             helper.setText("Your OTP is: <b>" + otp + "</b>. It is valid for 5 minutes.", true);
+
+            // Set custom sender name
+            helper.setFrom(new InternetAddress("your-email@gmail.com", "ScholarHub"));
+
             mailSender.send(message);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send email");
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            throw new RuntimeException("Failed to send email", e);
         }
     }
 
