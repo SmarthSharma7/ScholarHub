@@ -1,5 +1,6 @@
 package com.Smarth.ScholarHub.Controllers;
 
+import com.Smarth.ScholarHub.DTOs.MessageResponse;
 import com.Smarth.ScholarHub.DTOs.SubjectResponse;
 import com.Smarth.ScholarHub.Models.Subject;
 import com.Smarth.ScholarHub.Services.SubjectService;
@@ -14,8 +15,12 @@ import java.util.UUID;
 @RequestMapping("/api/subjects")
 public class SubjectController {
 
+    private final SubjectService subjectService;
+
     @Autowired
-    private SubjectService subjectService;
+    public SubjectController(final SubjectService subjectService) {
+        this.subjectService = subjectService;
+    }
 
     @PostMapping("/add/{userId}")
     public ResponseEntity<?> addSubject(@PathVariable UUID userId,
@@ -24,7 +29,7 @@ public class SubjectController {
         try {
             subjectResponse = subjectService.addSubject(userId, subject);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
         return ResponseEntity.ok(subjectResponse);
     }
@@ -35,7 +40,7 @@ public class SubjectController {
         try {
             listOfSubjects = subjectService.getSubjectsByUserId(userId);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
         return ResponseEntity.ok(listOfSubjects);
     }
@@ -46,7 +51,7 @@ public class SubjectController {
         try {
             subjectResponse = subjectService.updateSubject(subject);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
         return ResponseEntity.ok(subjectResponse);
     }
@@ -56,9 +61,9 @@ public class SubjectController {
         try {
             subjectService.deleteSubject(subjectId);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
-        return ResponseEntity.ok("{\"message\": \"Subject deleted successfully\"}");
+        return ResponseEntity.ok(new MessageResponse("Subject deleted successfully"));
     }
 
 }

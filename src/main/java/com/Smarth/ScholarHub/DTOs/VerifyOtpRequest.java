@@ -1,14 +1,11 @@
 package com.Smarth.ScholarHub.DTOs;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class VerifyOtpRequest {
-
-    public String getOtp() {
-        return otp;
-    }
-
-    public void setOtp(String otp) {
-        this.otp = otp;
-    }
 
     private String otp;
 

@@ -1,6 +1,7 @@
 package com.Smarth.ScholarHub.Models;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -8,6 +9,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "subjects")
+@Data
 public class Subject {
 
     @Id
@@ -34,55 +36,5 @@ public class Subject {
     @PrePersist
     public void prePersist() {
         this.createdAt = Timestamp.from(Instant.now());
-    }
-
-    // Getters and setters for all fields
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getTotalClasses() {
-        return totalClasses;
-    }
-
-    public void setTotalClasses(int totalClasses) {
-        this.totalClasses = totalClasses;
-    }
-
-    public int getAttendedClasses() {
-        return attendedClasses;
-    }
-
-    public void setAttendedClasses(int attendedClasses) {
-        this.attendedClasses = attendedClasses;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
     }
 }

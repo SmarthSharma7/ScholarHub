@@ -1,9 +1,6 @@
 package com.Smarth.ScholarHub.Controllers;
 
-import com.Smarth.ScholarHub.DTOs.LoginRequest;
-import com.Smarth.ScholarHub.DTOs.RegisterRequest;
-import com.Smarth.ScholarHub.DTOs.UpdateProfileRequest;
-import com.Smarth.ScholarHub.DTOs.VerifyOtpRequest;
+import com.Smarth.ScholarHub.DTOs.*;
 import com.Smarth.ScholarHub.Models.User;
 import com.Smarth.ScholarHub.Services.UserService;
 import jakarta.validation.Valid;
@@ -19,11 +16,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    public AuthController(final UserService userService, final BCryptPasswordEncoder passwordEncoder) {
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> userRegistration(@Valid @RequestBody RegisterRequest registerRequest,
@@ -76,7 +76,7 @@ public class AuthController {
         } catch (UsernameNotFoundException ex) {
             return ResponseEntity.badRequest().body("Account not found");
         }
-        return ResponseEntity.ok("{\"message\": \"Account deleted successfully\"}");
+        return ResponseEntity.ok(new MessageResponse("Account deleted successfully"));
 
     }
 
@@ -85,9 +85,9 @@ public class AuthController {
         try {
             userService.sendOtp(email);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
-        return ResponseEntity.ok("{\"message\": \"OTP sent successfully\"}");
+        return ResponseEntity.ok(new MessageResponse("OTP sent successfully"));
     }
 
     @PostMapping("/verify-otp/{email}")
@@ -95,9 +95,9 @@ public class AuthController {
         try {
             userService.verifyOtp(email, verifyOtpRequest.getOtp());
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
-        return ResponseEntity.ok("{\"message\": \"OTP verified successfully\"}");
+        return ResponseEntity.ok(new MessageResponse("OTP verified successfully"));
     }
 
     @PutMapping("/reset-pass/{email}")
@@ -105,9 +105,9 @@ public class AuthController {
         try {
             userService.resetPassword(email, verifyOtpRequest.getOtp());
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
-        return ResponseEntity.ok("{\"message\": \"Password changed successfully\"}");
+        return ResponseEntity.ok(new MessageResponse("Password changed successfully"));
     }
 
     @PutMapping("/update-profile/{pass}")
@@ -115,9 +115,9 @@ public class AuthController {
         try {
             userService.updateProfile(pass, updateProfileRequest);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
-        return ResponseEntity.ok("{\"message\": \"Profile updated successfully\"}");
+        return ResponseEntity.ok(new MessageResponse("Profile updated successfully"));
     }
 
 }

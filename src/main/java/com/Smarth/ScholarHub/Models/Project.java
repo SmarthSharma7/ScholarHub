@@ -6,20 +6,18 @@ import lombok.Data;
 import java.util.UUID;
 
 @Entity
-@Table(name = "boards")
+@Table(name = "projects")
 @Data
-public class Board {
+public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", nullable = false)
     private UUID id;
 
     @Column(name = "name")
     private String name;
 
-    @ManyToOne // Many boards can belong to one user
-    @JoinColumn(name = "user_id") // Foreign key column
-    private User user;
+    @Column(name = "description")
+    private String description;
 
 }

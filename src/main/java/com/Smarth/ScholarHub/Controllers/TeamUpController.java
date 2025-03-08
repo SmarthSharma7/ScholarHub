@@ -1,6 +1,7 @@
 
 package com.Smarth.ScholarHub.Controllers;
 
+import com.Smarth.ScholarHub.DTOs.MessageResponse;
 import com.Smarth.ScholarHub.DTOs.SearchResponse;
 import com.Smarth.ScholarHub.DTOs.TeamUpProfileRequest;
 import com.Smarth.ScholarHub.DTOs.TeamUpProfileResponse;
@@ -16,8 +17,12 @@ import java.util.UUID;
 @RequestMapping("/api/teamUp")
 public class TeamUpController {
 
+    private final TeamUpService teamUpService;
+
     @Autowired
-    private TeamUpService teamUpService;
+    public TeamUpController(final TeamUpService teamUpService) {
+        this.teamUpService = teamUpService;
+    }
 
     @PutMapping("/addTeamUpProfile")
     public ResponseEntity<?> addTeamUpProfile(@RequestBody TeamUpProfileRequest teamUpProfileRequest) {
@@ -25,7 +30,7 @@ public class TeamUpController {
         try {
             teamUpProfileResponse = teamUpService.addTeamUpProfile(teamUpProfileRequest);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
         return ResponseEntity.ok(teamUpProfileResponse);
     }
@@ -36,7 +41,7 @@ public class TeamUpController {
         try {
             teamUpProfileResponse = teamUpService.getTeamUpProfile(userId);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
         return ResponseEntity.ok(teamUpProfileResponse);
     }
@@ -46,7 +51,7 @@ public class TeamUpController {
         try {
             teamUpProfileResponse = teamUpService.updateTeamUpProfile(teamUpProfileRequest);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
         return ResponseEntity.ok(teamUpProfileResponse);
     }
@@ -56,9 +61,9 @@ public class TeamUpController {
         try {
             teamUpService.deleteTeamUpProfile(userId);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
-        return ResponseEntity.ok("{\"message\": \"Profile deleted successfully\"}");
+        return ResponseEntity.ok(new MessageResponse("Profile deleted successfully"));
     }
 
     @GetMapping("/search")

@@ -1,5 +1,6 @@
 package com.Smarth.ScholarHub.Controllers;
 
+import com.Smarth.ScholarHub.DTOs.MessageResponse;
 import com.Smarth.ScholarHub.DTOs.TodoTaskRequest;
 import com.Smarth.ScholarHub.DTOs.TodoTaskResponse;
 import com.Smarth.ScholarHub.Models.Board;
@@ -27,7 +28,7 @@ public class TodoController {
         try {
             board = todoService.addBoard(userId, boardName);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
         return ResponseEntity.ok(board);
     }
@@ -38,9 +39,9 @@ public class TodoController {
         try {
             todoService.updateBoard(boardId, boardName);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
-        return ResponseEntity.ok("{\"message\": \"Board updated successfully\"}");
+        return ResponseEntity.ok(new MessageResponse("Board updated successfully"));
     }
 
     @DeleteMapping("/boards/delete/{boardId}")
@@ -48,9 +49,9 @@ public class TodoController {
         try {
             todoService.deleteBoard(boardId);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
-        return ResponseEntity.ok("{\"message\": \"Board deleted successfully\"}");
+        return ResponseEntity.ok(new MessageResponse("Board deleted successfully"));
     }
 
     @PostMapping("task/add")
@@ -62,7 +63,7 @@ public class TodoController {
             System.out.println(ex.getMessage());
             return ResponseEntity.badRequest()
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body("{\"message\": \"" + ex.getMessage() + "\"}");
+                    .body(new MessageResponse(ex.getMessage()));
         }
         return ResponseEntity.ok(todoTask);
     }
@@ -77,9 +78,9 @@ public class TodoController {
         try {
             todoService.deleteTask(taskId);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body("{\"message\": \"" + ex.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
-        return ResponseEntity.ok("{\"message\": \"Task deleted successfully\"}");
+        return ResponseEntity.ok(new MessageResponse("Task deleted successfully"));
     }
 
     @GetMapping("/boards/getAll/{userId}")

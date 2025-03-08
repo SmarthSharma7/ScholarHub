@@ -1,12 +1,16 @@
 package com.Smarth.ScholarHub.Models;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "otp_verification")
+@Data
+@NoArgsConstructor
 public class OtpVerification {
 
     @Id
@@ -25,55 +29,10 @@ public class OtpVerification {
     @Column(nullable = false)
     private LocalDateTime expirationTime;
 
-    // Constructors
-    public OtpVerification() {
-    }
-
     public OtpVerification(String email, String otp, LocalDateTime sentTime, LocalDateTime expirationTime) {
         this.email = email;
         this.otp = otp;
         this.sentTime = sentTime;
-        this.expirationTime = expirationTime;
-    }
-
-    // Getters and Setters
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getOtp() {
-        return otp;
-    }
-
-    public void setOtp(String otp) {
-        this.otp = otp;
-    }
-
-    public LocalDateTime getSentTime() {
-        return sentTime;
-    }
-
-    public void setSentTime(LocalDateTime sentTime) {
-        this.sentTime = sentTime;
-    }
-
-    public LocalDateTime getExpirationTime() {
-        return expirationTime;
-    }
-
-    public void setExpirationTime(LocalDateTime expirationTime) {
         this.expirationTime = expirationTime;
     }
 
