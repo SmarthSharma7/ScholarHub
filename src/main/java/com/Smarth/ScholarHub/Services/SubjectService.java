@@ -17,14 +17,17 @@ import java.util.UUID;
 @Service
 public class SubjectService {
 
-    @Autowired
-    private SubjectRepository subjectRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final SubjectRepository subjectRepository;
+    private final UserRepository userRepository;
 
     @PersistenceContext
     private EntityManager entityManager; // To refresh entity after DB update
+
+    @Autowired
+    public SubjectService(final SubjectRepository subjectRepository, final UserRepository userRepository) {
+        this.subjectRepository = subjectRepository;
+        this.userRepository = userRepository;
+    }
 
     public SubjectResponse addSubject(UUID userId, Subject subject) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Couldn't find user"));
