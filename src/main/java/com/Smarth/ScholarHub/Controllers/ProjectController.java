@@ -1,9 +1,6 @@
 package com.Smarth.ScholarHub.Controllers;
 
-import com.Smarth.ScholarHub.DTOs.AllInvitesResponse;
-import com.Smarth.ScholarHub.DTOs.AllProjectsResponse;
-import com.Smarth.ScholarHub.DTOs.MessageResponse;
-import com.Smarth.ScholarHub.DTOs.ProjectInviteRequest;
+import com.Smarth.ScholarHub.DTOs.*;
 import com.Smarth.ScholarHub.Models.Project;
 import com.Smarth.ScholarHub.Services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,11 +57,11 @@ public class ProjectController {
     public ResponseEntity<?> updateProjectInviteStatus(@PathVariable("projectInviteId") UUID projectInviteId,
                                                        @PathVariable("status") String status) {
         try {
-            projectService.updateProjectInviteStatus(projectInviteId, status);
+            List<SearchResponse> members = projectService.updateProjectInviteStatus(projectInviteId, status);
+            return ResponseEntity.ok(members);
         } catch (RuntimeException ex) {
             return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
-        return ResponseEntity.ok(new MessageResponse("Invite status updated successfully"));
     }
 
     @DeleteMapping("/invite/delete/{projectInviteId}")

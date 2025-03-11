@@ -18,4 +18,5 @@ public interface ProjectMembersRepository extends JpaRepository<ProjectMembers, 
     @Query("SELECT pm.project FROM ProjectMembers pm WHERE pm.user.id = :userId")
     List<Project> findProjectsByUserId(@Param("userId") UUID userId); // Fixed method signature
 
+    boolean existsByProjectIdAndUserId(UUID projectId, UUID userId);
 }

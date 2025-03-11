@@ -30,7 +30,8 @@ public class ProjectService {
     @Autowired
     public ProjectService(final ProjectRepository projectRepository,
                           final ProjectMembersRepository projectMembersRepository,
-                          final UserRepository userRepository, ProjectInvitesRepository projectInvitesRepository) {
+                          final UserRepository userRepository,
+                          final ProjectInvitesRepository projectInvitesRepository) {
         this.projectRepository = projectRepository;
         this.projectMembersRepository = projectMembersRepository;
         this.userRepository = userRepository;
@@ -97,11 +98,7 @@ public class ProjectService {
     public List<AllInvitesResponse> getAllInvitesByUserId(UUID userId, String senderAlso) {
         List<AllInvitesResponse> allInvites = new ArrayList<>();
         List<ProjectInvite> invitesList;
-        if (senderAlso.equals("false")) {
-            invitesList = projectInvitesRepository.findByReceiverId(userId);
-        } else {
-            invitesList = projectInvitesRepository.findBySenderIdOrReceiverId(userId, userId);
-        }
+        invitesList = projectInvitesRepository.findBySenderIdOrReceiverId(userId, userId);
 
         for (ProjectInvite invite : invitesList) {
             AllInvitesResponse allInviteResponse = new AllInvitesResponse();
@@ -128,6 +125,7 @@ public class ProjectService {
             allInviteResponse.setId(invite.getId());
             allInviteResponse.setSender(searchResponseSender);
             allInviteResponse.setReceiver(searchResponseReceiver);
+            allInviteResponse.setProjectId(project.getId());
             allInviteResponse.setProjectName(project.getName());
             allInviteResponse.setProjectDescription(project.getDescription());
             allInviteResponse.setInviteeRole(invite.getInviteeRole());
@@ -138,11 +136,39 @@ public class ProjectService {
         return allInvites;
     }
 
-    public void updateProjectInviteStatus(UUID projectInviteId, String status) {
+    public List<SearchResponse> updateProjectInviteStatus(UUID projectInviteId, String status) {
         ProjectInvite projectInvite = projectInvitesRepository.findById(projectInviteId).
                 orElseThrow(() -> new RuntimeException("Couldn't find project invite"));
         projectInvite.setStatus(status);
         projectInvitesRepository.save(projectInvite);
+        List<SearchResponse> membersToSend = new ArrayList<>();
+        if (status.equals("accepted")) {
+
+            boolean alreadyExists = projectMembersRepository
+                    .existsByProjectIdAndUserId(projectInvite.getProject().getId(), projectInvite.getReceiver().getId());
+
+            if (!alreadyExists) {
+                ProjectMembers projectMembers = new ProjectMembers();
+                projectMembers.setProject(projectInvite.getProject());
+                projectMembers.setUser(projectInvite.getReceiver());
+                projectMembers.setRole("member");
+                projectMembersRepository.save(projectMembers);
+            }
+
+            Project project = projectInvite.getProject();
+            List<ProjectMembers> members = projectMembersRepository.findByProjectId(project.getId());
+            for (ProjectMembers member : members) {
+                User user = member.getUser();
+                SearchResponse searchResponse = new SearchResponse();
+                searchResponse.setName(user.getName());
+                searchResponse.setEmail(user.getEmail());
+                searchResponse.setBio(user.getBio());
+                searchResponse.setSkills(user.getSkills());
+                searchResponse.setIsAvailable(user.getIsAvailable());
+                membersToSend.add(searchResponse);
+            }
+        }
+        return membersToSend;
     }
 
     public void deleteProjectInvite(UUID projectInviteId) {

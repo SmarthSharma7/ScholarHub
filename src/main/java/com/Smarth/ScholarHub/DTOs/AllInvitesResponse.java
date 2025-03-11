@@ -12,6 +12,7 @@ public class AllInvitesResponse {
     private UUID id;
     private SearchResponse sender;
     private SearchResponse receiver;
+    private UUID projectId;
     private String projectName;
     private String projectDescription;
     private String inviteeRole;
