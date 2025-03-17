@@ -8,9 +8,9 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "subjects")
+@Table(name = "subjects_new")
 @Data
-public class Subject {
+public class SubjectNew {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -24,12 +24,6 @@ public class Subject {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "total_classes")
-    private int totalClasses;
-
-    @Column(name = "attended_classes")
-    private int attendedClasses;
-
     @Column(name = "created_at")
     private java.sql.Timestamp createdAt;
 
@@ -37,4 +31,5 @@ public class Subject {
     public void prePersist() {
         this.createdAt = Timestamp.from(Instant.now());
     }
+
 }
