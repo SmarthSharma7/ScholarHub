@@ -2,6 +2,7 @@ package com.Smarth.ScholarHub.Repositories;
 
 import com.Smarth.ScholarHub.Models.Project;
 import com.Smarth.ScholarHub.Models.ProjectMembers;
+import com.Smarth.ScholarHub.Models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +20,7 @@ public interface ProjectMembersRepository extends JpaRepository<ProjectMembers, 
     List<Project> findProjectsByUserId(@Param("userId") UUID userId); // Fixed method signature
 
     boolean existsByProjectIdAndUserId(UUID projectId, UUID userId);
+
+    ProjectMembers findByProjectIdAndUserId(UUID projectId, UUID userId);
+
 }

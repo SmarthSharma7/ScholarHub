@@ -74,4 +74,48 @@ public class ProjectController {
         return ResponseEntity.ok(new MessageResponse("Invite deleted successfully"));
     }
 
+    @PutMapping("/editProject")
+    public ResponseEntity<?> editProject(@RequestBody EditProjectRequest editProjectRequest) {
+        try {
+            projectService.editProject(editProjectRequest);
+            return ResponseEntity.ok(new MessageResponse("Project updated successfully"));
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+    @DeleteMapping("/kickMember/{projectId}/{userEmail}")
+    public ResponseEntity<?> kickMember(@PathVariable("projectId") UUID projectId,
+                                        @PathVariable("userEmail") String userEmail) {
+        String deleteProject;
+        try {
+            deleteProject = projectService.kickMember(projectId, userEmail);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
+        }
+        return ResponseEntity.ok(new MessageResponse(deleteProject));
+    }
+
+    @PutMapping("/changeLeader/{projectId}/{oldLeaderEmail}/{newLeaderEmail}")
+    public ResponseEntity<?> changeLeader(@PathVariable("projectId") UUID projectId,
+                                          @PathVariable("oldLeaderEmail") String oldLeaderEmail,
+                                          @PathVariable("newLeaderEmail") String newLeaderEmail) {
+        try {
+            projectService.changeLeader(projectId, oldLeaderEmail, newLeaderEmail);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
+        }
+        return ResponseEntity.ok(new MessageResponse("Leader changed successfully"));
+    }
+
+    @DeleteMapping("/deleteProject/{projectId}")
+    public ResponseEntity<?> deleteProject(@PathVariable("projectId") UUID projectId) {
+        try {
+            projectService.deleteProject(projectId);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
+        }
+        return ResponseEntity.ok(new MessageResponse("Project deleted successfully"));
+    }
+
 }

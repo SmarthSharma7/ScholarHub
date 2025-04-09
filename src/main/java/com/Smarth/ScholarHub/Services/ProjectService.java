@@ -1,9 +1,6 @@
 package com.Smarth.ScholarHub.Services;
 
-import com.Smarth.ScholarHub.DTOs.AllInvitesResponse;
-import com.Smarth.ScholarHub.DTOs.AllProjectsResponse;
-import com.Smarth.ScholarHub.DTOs.ProjectInviteRequest;
-import com.Smarth.ScholarHub.DTOs.SearchResponse;
+import com.Smarth.ScholarHub.DTOs.*;
 import com.Smarth.ScholarHub.Models.Project;
 import com.Smarth.ScholarHub.Models.ProjectInvite;
 import com.Smarth.ScholarHub.Models.ProjectMembers;
@@ -55,11 +52,13 @@ public class ProjectService {
         List<Project> projectList = projectMembersRepository.findProjectsByUserId(userId);
         for (Project project : projectList) {
             String role = "";
+            String leaderEmail = "";
             List<ProjectMembers> tempList = projectMembersRepository.findByProjectId(project.getId());
             List<SearchResponse> membersList = new ArrayList<>();
             for (ProjectMembers projectMembers : tempList) {
                 User user = projectMembers.getUser();
                 if (user.getId().equals(userId)) role = projectMembers.getRole();
+                if (projectMembers.getRole().equals("leader")) leaderEmail = user.getEmail();
                 SearchResponse searchResponse = new SearchResponse();
                 searchResponse.setName(user.getName());
                 searchResponse.setEmail(user.getEmail());
@@ -74,6 +73,7 @@ public class ProjectService {
             allProjectsResponse.setDescription(project.getDescription());
             allProjectsResponse.setRole(role);
             allProjectsResponse.setMembers(membersList);
+            allProjectsResponse.setLeaderEmail(leaderEmail);
             projectsResponseList.add(allProjectsResponse);
         }
         return projectsResponseList;
@@ -173,6 +173,42 @@ public class ProjectService {
 
     public void deleteProjectInvite(UUID projectInviteId) {
         projectInvitesRepository.deleteById(projectInviteId);
+    }
+
+    public void editProject(EditProjectRequest editProjectRequest) {
+        Project project = projectRepository.findById(editProjectRequest.getId()).
+                orElseThrow(() -> new RuntimeException("Project not found"));
+        project.setName(editProjectRequest.getName());
+        project.setDescription(editProjectRequest.getDescription());
+        projectRepository.save(project);
+    }
+
+    public String kickMember(UUID projectId, String userEmail) {
+        UUID userId = userRepository.findByEmail(userEmail).get().getId();
+        ProjectMembers projectMember = projectMembersRepository.findByProjectIdAndUserId(projectId, userId);
+        if (projectMember == null) throw new RuntimeException("Member not found in this project.");
+        projectMembersRepository.delete(projectMember);
+        List<ProjectMembers> projectMembers = projectMembersRepository.findByProjectId(projectId);
+        if (projectMembers.isEmpty()) {
+            projectRepository.deleteById(projectId);
+            return "true";
+        }
+        return "false";
+    }
+
+    public void changeLeader(UUID projectId, String oldLeaderEmail, String newLeaderEmail) {
+        UUID oldLeaderId = userRepository.findByEmail(oldLeaderEmail).get().getId();
+        UUID newLeaderId = userRepository.findByEmail(newLeaderEmail).get().getId();
+        ProjectMembers oldLeader = projectMembersRepository.findByProjectIdAndUserId(projectId, oldLeaderId);
+        oldLeader.setRole("member");
+        projectMembersRepository.save(oldLeader);
+        ProjectMembers newLeader = projectMembersRepository.findByProjectIdAndUserId(projectId, newLeaderId);
+        newLeader.setRole("leader");
+        projectMembersRepository.save(newLeader);
+    }
+
+    public void deleteProject(UUID projectId) {
+        projectRepository.deleteById(projectId);
     }
 
 }
