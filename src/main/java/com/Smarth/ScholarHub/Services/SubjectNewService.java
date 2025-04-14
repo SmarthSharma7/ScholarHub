@@ -87,7 +87,7 @@ public class SubjectNewService {
         return subjectResponses;
     }
 
-    public void updateSubject(List<SubjectRecord> subjectRecordList) {
+    public List<SubjectRecord> updateSubject(List<SubjectRecord> subjectRecordList) {
         SubjectNew subjectToBeUpdated = subjectNewRepository.findById(subjectRecordList.getFirst().getSubjectId())
                 .orElseThrow(() -> new RuntimeException("Subject not found"));
         for (SubjectRecord subjectRecord : subjectRecordList) {
@@ -111,6 +111,17 @@ public class SubjectNewService {
                 attendanceRecordRepository.save(newAttendanceRecord);
             }
         }
+        List<AttendanceRecord> attendanceRecords = attendanceRecordRepository.findBySubjectNewId(subjectToBeUpdated.getId());
+        List<SubjectRecord> subjectRecords = new ArrayList<>();
+        for (AttendanceRecord attendanceRecord : attendanceRecords) {
+            SubjectRecord subjectRecord = new SubjectRecord();
+            subjectRecord.setSubjectId(attendanceRecord.getSubjectNew().getId());
+            subjectRecord.setDate(attendanceRecord.getDate());
+            subjectRecord.setStatus(attendanceRecord.getStatus());
+            subjectRecord.setNote(attendanceRecord.getNote());
+            subjectRecords.add(subjectRecord);
+        }
+        return subjectRecords;
     }
 
 }

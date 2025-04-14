@@ -51,13 +51,8 @@ public class SubjectNewController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateSubject(@RequestBody List<SubjectRecord> subjectRecordList) {
-        try {
-            subjectNewService.updateSubject(subjectRecordList);
-        } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
-        }
-        return ResponseEntity.ok(new MessageResponse("Subject updated successfully"));
+    public ResponseEntity<List<SubjectRecord>> updateSubject(@RequestBody List<SubjectRecord> subjectRecordList) {
+        return ResponseEntity.ok(subjectNewService.updateSubject(subjectRecordList));
     }
 
 }

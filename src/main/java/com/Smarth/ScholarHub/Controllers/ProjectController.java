@@ -1,8 +1,10 @@
 package com.Smarth.ScholarHub.Controllers;
 
 import com.Smarth.ScholarHub.DTOs.*;
+import com.Smarth.ScholarHub.Models.Message;
 import com.Smarth.ScholarHub.Models.Project;
 import com.Smarth.ScholarHub.Services.ProjectService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -116,6 +118,22 @@ public class ProjectController {
             return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
         return ResponseEntity.ok(new MessageResponse("Project deleted successfully"));
+    }
+
+    @GetMapping("/messages/getAll/{userId}")
+    public ResponseEntity<List<MessagesResponse>> getAllMessagesForUser(@PathVariable("userId") UUID userId) {
+        return ResponseEntity.ok(projectService.getAllMessagesForUser(userId));
+    }
+
+    @PostMapping("/messages/send")
+    public ResponseEntity<?> sendMessage(@RequestBody SendMessageRequest sendMessageRequest) {
+        UUID id;
+        try {
+           id = projectService.sendMessage(sendMessageRequest);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
+        }
+        return ResponseEntity.ok(new MessageResponse(id.toString()));
     }
 
 }

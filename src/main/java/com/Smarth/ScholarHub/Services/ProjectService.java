@@ -1,14 +1,8 @@
 package com.Smarth.ScholarHub.Services;
 
 import com.Smarth.ScholarHub.DTOs.*;
-import com.Smarth.ScholarHub.Models.Project;
-import com.Smarth.ScholarHub.Models.ProjectInvite;
-import com.Smarth.ScholarHub.Models.ProjectMembers;
-import com.Smarth.ScholarHub.Models.User;
-import com.Smarth.ScholarHub.Repositories.ProjectInvitesRepository;
-import com.Smarth.ScholarHub.Repositories.ProjectMembersRepository;
-import com.Smarth.ScholarHub.Repositories.ProjectRepository;
-import com.Smarth.ScholarHub.Repositories.UserRepository;
+import com.Smarth.ScholarHub.Models.*;
+import com.Smarth.ScholarHub.Repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,16 +17,18 @@ public class ProjectService {
     private final ProjectMembersRepository projectMembersRepository;
     private final UserRepository userRepository;
     private final ProjectInvitesRepository projectInvitesRepository;
+    private final MessageRepository messageRepository;
 
     @Autowired
     public ProjectService(final ProjectRepository projectRepository,
                           final ProjectMembersRepository projectMembersRepository,
                           final UserRepository userRepository,
-                          final ProjectInvitesRepository projectInvitesRepository) {
+                          final ProjectInvitesRepository projectInvitesRepository, MessageRepository messageRepository) {
         this.projectRepository = projectRepository;
         this.projectMembersRepository = projectMembersRepository;
         this.userRepository = userRepository;
         this.projectInvitesRepository = projectInvitesRepository;
+        this.messageRepository = messageRepository;
     }
 
     public UUID createProject(Project project, UUID userId) {
@@ -209,6 +205,37 @@ public class ProjectService {
 
     public void deleteProject(UUID projectId) {
         projectRepository.deleteById(projectId);
+    }
+
+    public List<MessagesResponse> getAllMessagesForUser(UUID userId) {
+        List<MessagesResponse> messagesResponseList = new ArrayList<>();
+        List<Project> projectList = projectMembersRepository.findProjectsByUserId(userId);
+        for (Project project : projectList) {
+            List<Message> messagesForProject = messageRepository.findByProjectId(project.getId());
+            for (Message message : messagesForProject) {
+                MessagesResponse messagesResponse = new MessagesResponse();
+                messagesResponse.setId(message.getId());
+                messagesResponse.setProjectId(message.getProject().getId());
+                messagesResponse.setMessageContent(message.getMessageContent());
+                messagesResponse.setSentBy(message.getSentBy().getEmail());
+                messagesResponse.setSentAt(message.getSentAt());
+                messagesResponseList.add(messagesResponse);
+            }
+        }
+        return messagesResponseList;
+    }
+
+    public UUID sendMessage(SendMessageRequest sendMessageRequest) {
+        Project project = projectRepository.findById(sendMessageRequest.getProjectId()).
+                orElseThrow(() -> new RuntimeException("Couldn't find project"));
+        User user = userRepository.findByEmail(sendMessageRequest.getSentBy())
+                .orElseThrow(() -> new RuntimeException("Couldn't find user"));
+        Message message = new Message();
+        message.setProject(project);
+        message.setMessageContent(sendMessageRequest.getMessageContent());
+        message.setSentBy(user);
+        messageRepository.save(message);
+        return message.getId();
     }
 
 }

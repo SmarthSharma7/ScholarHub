@@ -16,4 +16,6 @@ public interface AttendanceRecordRepository extends JpaRepository<AttendanceReco
 
     Optional<AttendanceRecord> findBySubjectNewIdAndDate(UUID subjectId, LocalDate date);
 
+    List<AttendanceRecord> findBySubjectNewId(UUID subjectId);
+
 }
