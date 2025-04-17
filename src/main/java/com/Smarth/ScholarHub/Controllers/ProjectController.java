@@ -1,10 +1,8 @@
 package com.Smarth.ScholarHub.Controllers;
 
 import com.Smarth.ScholarHub.DTOs.*;
-import com.Smarth.ScholarHub.Models.Message;
 import com.Smarth.ScholarHub.Models.Project;
 import com.Smarth.ScholarHub.Services.ProjectService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -134,6 +132,43 @@ public class ProjectController {
             return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
         }
         return ResponseEntity.ok(new MessageResponse(id.toString()));
+    }
+
+    @GetMapping("/projectTasks/getAll/{userId}")
+    public ResponseEntity<List<AllProjectTasksResponse>> getAllProjectTasksForUser(@PathVariable("userId") UUID userId) {
+        return ResponseEntity.ok(projectService.getAllProjectTasksForUser(userId));
+    }
+
+    @PostMapping("/projectTasks/addTask")
+    public ResponseEntity<?> addTask(@RequestBody AddTaskRequest addTaskRequest) {
+        String id;
+        try {
+            id = projectService.addTask(addTaskRequest).toString();
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
+        }
+        return ResponseEntity.ok(new MessageResponse("Task added successfully"));
+    }
+
+    @PutMapping("/projectTasks/updateStatus/{taskId}/{status}")
+    public ResponseEntity<?> updateStatusOfProjectTask(@PathVariable("taskId") UUID taskId,
+                                                       @PathVariable("status") String status) {
+        try {
+            projectService.updateStatusOfProjectTask(taskId, status);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
+        }
+        return ResponseEntity.ok(new MessageResponse("Task status updated successfully"));
+    }
+
+    @DeleteMapping("/projectTasks/deleteTask/{taskId}")
+    public ResponseEntity<?> deleteTask(@PathVariable("taskId") UUID taskId) {
+        try {
+            projectService.deleteTask(taskId);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
+        }
+        return ResponseEntity.ok(new MessageResponse("Task deleted successfully"));
     }
 
 }

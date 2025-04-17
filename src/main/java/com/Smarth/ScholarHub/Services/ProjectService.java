@@ -18,17 +18,19 @@ public class ProjectService {
     private final UserRepository userRepository;
     private final ProjectInvitesRepository projectInvitesRepository;
     private final MessageRepository messageRepository;
+    private final ProjectTaskRepository projectTaskRepository;
 
     @Autowired
     public ProjectService(final ProjectRepository projectRepository,
                           final ProjectMembersRepository projectMembersRepository,
                           final UserRepository userRepository,
-                          final ProjectInvitesRepository projectInvitesRepository, MessageRepository messageRepository) {
+                          final ProjectInvitesRepository projectInvitesRepository, MessageRepository messageRepository, ProjectTaskRepository projectTaskRepository) {
         this.projectRepository = projectRepository;
         this.projectMembersRepository = projectMembersRepository;
         this.userRepository = userRepository;
         this.projectInvitesRepository = projectInvitesRepository;
         this.messageRepository = messageRepository;
+        this.projectTaskRepository = projectTaskRepository;
     }
 
     public UUID createProject(Project project, UUID userId) {
@@ -236,6 +238,55 @@ public class ProjectService {
         message.setSentBy(user);
         messageRepository.save(message);
         return message.getId();
+    }
+
+    public List<AllProjectTasksResponse> getAllProjectTasksForUser(UUID userId) {
+        List<AllProjectTasksResponse> allProjectTasksResponseList = new ArrayList<>();
+        List<Project> projectList = projectMembersRepository.findProjectsByUserId(userId);
+        for (Project project : projectList) {
+            List<ProjectTask> projectTaskList = projectTaskRepository.findByProjectId(project.getId());
+            for (ProjectTask projectTask : projectTaskList) {
+                AllProjectTasksResponse allProjectTasksResponse = new AllProjectTasksResponse();
+                allProjectTasksResponse.setId(projectTask.getId());
+                allProjectTasksResponse.setProjectId(project.getId());
+                allProjectTasksResponse.setAssignedTo(projectTask.getAssignedTo().getEmail());
+                allProjectTasksResponse.setTitle(projectTask.getTitle());
+                allProjectTasksResponse.setDescription(projectTask.getDescription());
+                allProjectTasksResponse.setStatus(projectTask.getStatus());
+                allProjectTasksResponse.setDueDate(projectTask.getDueDate());
+                allProjectTasksResponse.setCreatedAt(projectTask.getCreatedAt());
+                allProjectTasksResponseList.add(allProjectTasksResponse);
+            }
+        }
+        return allProjectTasksResponseList;
+    }
+
+    public UUID addTask(AddTaskRequest addTaskRequest) {
+        Project project = projectRepository.findById(addTaskRequest.getProjectId()).
+                orElseThrow(() -> new RuntimeException("Couldn't find project"));
+        User assignedTo = userRepository.findByEmail(addTaskRequest.getAssignedTo()).
+                orElseThrow(() -> new RuntimeException("Couldn't find user"));
+        ProjectTask projectTask = new ProjectTask();
+        projectTask.setProject(project);
+        projectTask.setAssignedTo(assignedTo);
+        projectTask.setTitle(addTaskRequest.getTitle());
+        projectTask.setDescription(addTaskRequest.getDescription());
+        projectTask.setStatus(addTaskRequest.getStatus());
+        projectTask.setDueDate(addTaskRequest.getDueDate());
+        projectTaskRepository.save(projectTask);
+        return projectTask.getId();
+    }
+
+    public void updateStatusOfProjectTask(UUID taskId, String status) {
+        ProjectTask projectTask = projectTaskRepository.findById(taskId).
+                orElseThrow(() -> new RuntimeException("Couldn't find task"));
+        projectTask.setStatus(status);
+        projectTaskRepository.save(projectTask);
+    }
+    public void deleteTask(UUID taskId) {
+        ProjectTask projectTask = projectTaskRepository.findById(taskId).
+                orElseThrow(() -> new RuntimeException("Couldn't find task"));
+        projectTaskRepository.delete(projectTask);
     }
 
 }
